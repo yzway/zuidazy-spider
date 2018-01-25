@@ -2,7 +2,9 @@
 # encoding=utf-8
 
 """
-爬取豆瓣电影TOP250 - 完整示例代码
+爬取最大资源网-伦理片 - 完整示例代码
+抓取截至时间2018-01-24
+2018/11/22  builded by dchaster
 """
 
 import codecs
@@ -52,12 +54,9 @@ def detail_html(html):
     thumb = warp_dom.find('div', attrs={'class':'vodImg'}).find('img').attrs['src']
     source_url = PARSE_URL + warp_dom.find('div', attrs={'id':'play_1'}).find('input', attrs={'name':'copy_sel'}).attrs['value']
     createTime = warp_dom.find('div', attrs={'class':'vodinfobox'}).find('ul').contents[17].find('span').text
+    _s = ["'" + title + "'", "'" + thumb + "'", "'" + source_url + "'", "'" + createTime + "'"]
+    return _s
 
-    with codecs.open('source', 'wb', encoding='utf-8') as file_open:
-        _s = [title, thumb, source_url, createTime]
-        raw_string = ','.join(_s)
-        content = str(raw_string) + '\n'
-        file_open.write(content)
 
 
 def main():
@@ -65,29 +64,43 @@ def main():
     html = []
     a_href_list = []
     next_page_url = ''
-    #with codecs.open('detail_urls', 'wb', encoding='utf-8') as fp:
-        # 当前资源网的伦理片页数为48
-        # for page in range(1, 49):
-        #     url = BASE_URL + "/?m=vod-type-id-17-pg-" + str(page) + ".html"
-        #     print(url)
-        #     html = download_page(url)
-        #     a_href_list = parse_html(html)
-        #     # 将a_href_list数组拆分成字符串并且用|隔开保存到detail_urls文件中
-        #     fp.write(u'{a_href_list}\n'.format(a_href_list='\n'.join(a_href_list)))
-
-
-        # fp2 = open("D:\phpStudy\WWW\pyCharm\\navcmssource\detail_urls", 'r')
-        # print('111')
-        # contents = fp2.read()
-        # chapters = filter(lambda x: x != '', contents.split('\n'))
-        # fp2.close()
-        # return (chapter.split('|') for chapter in chapters)
+    # 获取所有详情页的链接并写入到detail_urls文件中
+    # with codecs.open('detail_urls', 'wb', encoding='utf-8') as fp:
+    #     #当前资源网的伦理片页数为48
+    #     for page in range(1, 49):
+    #         url = BASE_URL + "/?m=vod-type-id-17-pg-" + str(page) + ".html"
+    #         print(url)
+    #         html = download_page(url)
+    #         a_href_list = parse_html(html)
+    #         # 将a_href_list数组拆分成字符串并且用|隔开保存到detail_urls文件中
+    #         fp.write(u'{a_href_list}\n'.format(a_href_list='\n'.join(a_href_list)))
 
 
 
-    html2 = download_page("http://zuidazy.com/?m=vod-detail-id-33099.html")
-    html_obj = detail_html(html2)
 
+    # 解析所有页面并写入到source文件中
+    fp = open('detail_urls', 'r')
+    contents = fp.read()
+
+    items = contents.split('\n')
+    r_content = ''
+
+    with codecs.open('source', 'wb', encoding='utf-8') as fp_source:
+        if items:
+            i= 0
+            for index, item in enumerate(items):
+                if item:
+                    html2 = download_page(item)
+                    if html2:
+                        source = detail_html(html2)
+                        raw_string = ','.join(source)  # list拆分成字符串并以逗号连接\
+                        r_content = str(raw_string) + '\n'
+                        fp_source.write(r_content)
+                        i = i + 1
+                        print(i)
+
+    fp.close()
+    fp_source.close()
 
 if __name__ == '__main__':
     main()
