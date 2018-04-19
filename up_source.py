@@ -3,8 +3,8 @@
 
 """
 爬取最大资源网-伦理片 - 完整示例代码
-上次抓取截至时间 2018-01-28
-2018/11/22  builded by dchaster
+上次抓取截至时间 2018-01-29
+2017/11/22  builded by dchaster
 """
 
 import codecs
@@ -41,7 +41,8 @@ def parse_html(html):
             str_up_datetime = li_detail.find('span',attrs={'class':'xing_vb6'}).text
 
             upTimeStamp = int(time.mktime(time.strptime(str_up_datetime, "%Y-%m-%d")))
-            nowTimeStamp = int(time.mktime(time.strptime('2018-01-24', "%Y-%m-%d")))
+            # 更新开始日期
+            nowTimeStamp = int(time.mktime(time.strptime('2018-01-29', "%Y-%m-%d")))
             # 从截至上次的时间开始遍历
             if nowTimeStamp < upTimeStamp and a_detail:
                 a_href_list.append(BASE_URL + a_detail.attrs['href'])
@@ -84,8 +85,8 @@ def main():
     #获取所有详情页的链接并写入到detail_urls文件中
     with codecs.open('detail_urls.txt', 'wb', encoding='utf-8') as fp:
 
-        #当前资源网的伦理片页数为48
-        for page in range(1, 49):
+        #当前资源网的伦理片页数为57
+        for page in range(1, 58):
             url = BASE_URL + "/?m=vod-type-id-17-pg-" + str(page) + ".html"
             html = download_page(url)
             a_href_list = parse_html(html)
